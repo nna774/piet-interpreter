@@ -4,7 +4,8 @@
   "description": "piet interpreter",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ignore-pattern '**/node_modules/' \"**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/nna774/piet-interpreter/issues"
   },
-  "homepage": "https://github.com/nna774/piet-interpreter#readme"
+  "homepage": "https://github.com/nna774/piet-interpreter#readme",
+  "devDependencies": {
+    "eslint": "^3.7.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0"
+  }
 }

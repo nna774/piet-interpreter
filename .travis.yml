@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - 5.11
+  - 6
+  - 6.1
+sudo: false
+install:
+  - npm install
+script:
+  - npm run lint
+  - npm test || echo "no test"
