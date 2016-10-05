@@ -8,4 +8,4 @@ install:
   - npm install
 script:
   - npm run lint
-  - npm test || echo "no test"
+  - npm test
