@@ -6,7 +6,7 @@ module.exports = {
     "no-bitwise": "off",
     "no-plusplus": "off",
     "no-continue": "off",
-    "no-param-reassign": ["error", { "props": false }],
+    "no-param-reassign": "off",
     "yoda": ["error", "never", { "onlyEquality": true }],
     "strict": ["error", "function"],
     "arrow-parens": ["error", "always"],
