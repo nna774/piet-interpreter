@@ -491,7 +491,7 @@ function next(world) {
     }
   } else {
     if (unmovable(code, nextCodel)) {
-      if (env.unmovableCnt %2 === 0) {
+      if (env.unmovableCnt % 2 === 0) {
         ++env.cc;
       } else {
         ++env.dp;
@@ -508,9 +508,8 @@ function next(world) {
         y: nextCodel[1],
       };
       return world;
-    } else {
-      env.unmovableCnt = 0;
     }
+    env.unmovableCnt = 0;
   }
 
   const currentColor = code[env.x][env.y];
