@@ -408,13 +408,13 @@ function findNextCodelImp(env, code) {
       if (list.length !== 1) {
         // cc を考慮
         if (cc % 2 === 0) {
-          let max = -1;
-          for (const p of list) max = Math.max(max, p[1]);
-          list = list.filter((p) => p[1] === max);
-        } else {
           min = Infinity;
           for (const p of list) min = Math.min(min, p[1]);
           list = list.filter((p) => p[1] === min);
+        } else {
+          let max = -1;
+          for (const p of list) max = Math.max(max, p[1]);
+          list = list.filter((p) => p[1] === max);
         }
       }
       nextCodel = list[0];
