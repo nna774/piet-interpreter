@@ -469,24 +469,48 @@ function next(world) {
   const code = world.code;
   let nextCodel = findNextCodel(env, code);
 
-  let contFlg = false;
-  for (let i = 0; i < 8; ++i) {
-    if (unmovable(code, nextCodel)) {
-      if (i % 2 === 0) {
-        env.cc++;
+  if (!world.step) {
+    let contFlg = false;
+    for (let i = 0; i < 8; ++i) {
+      if (unmovable(code, nextCodel)) {
+        if (i % 2 === 0) {
+          env.cc++;
+        } else {
+          env.dp++;
+        }
+        nextCodel = findNextCodel(env, code);
       } else {
-        env.dp++;
+        contFlg = true;
+        break;
       }
-      nextCodel = findNextCodel(env, code);
-    } else {
-      contFlg = true;
-      break;
     }
-  }
-  if (!contFlg && unmovable(code, nextCodel)) {
-    // おしまい
-    world.halt = true;
-    return world;
+    if (!contFlg && unmovable(code, nextCodel)) {
+      // おしまい
+      world.halt = true;
+      return world;
+    }
+  } else {
+    if (unmovable(code, nextCodel)) {
+      if (env.unmovableCnt %2 === 0) {
+        ++env.cc;
+      } else {
+        ++env.dp;
+      }
+      ++env.unmovableCnt;
+      if (env.unmovableCnt === 8) {
+        world.halt = true;
+        return world;
+      }
+
+      nextCodel = findNextCodel(env, code);
+      env.nextCodel = {
+        x: nextCodel[0],
+        y: nextCodel[1],
+      };
+      return world;
+    } else {
+      env.unmovableCnt = 0;
+    }
   }
 
   const currentColor = code[env.x][env.y];
@@ -499,6 +523,12 @@ function next(world) {
   env.x = nextCodel[0];
   env.y = nextCodel[1];
 
+  nextCodel = findNextCodel(env, code);
+  env.nextCodel = {
+    x: nextCodel[0],
+    y: nextCodel[1],
+  };
+
   world.halt = false;
   return world;
 }
@@ -510,9 +540,10 @@ function runImp(world) {
   return world.env.output;
 }
 
-function create(code, input) {
+function create(code, input, step) {
   const env = {};
   env.x = env.y = env.dp = env.cc = env.area = 0;
+  env.unmovableCnt = 0;
   env.stack = [];
   env.input = input || [];
   env.output = '';
@@ -520,6 +551,7 @@ function create(code, input) {
     env,
     code,
     halt: false,
+    step,
   };
 }
 
