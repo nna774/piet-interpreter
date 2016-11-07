@@ -9,3 +9,13 @@ install:
 script:
   - npm run lint
   - npm test
+after_success:
+  - npm run build
+deploy:
+  provider: npm
+  email: "nonamea774@gmail.com"
+  api_key: $NPM_API_KEY
+  skip_cleanup: true
+  on:
+    tags: true
+    node: '6'

@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const interpreter = require('../lib/interpreter.js');
+const interpreter = require('../src/lib/interpreter.js');
 
 describe('interpreter', () => {
   describe('print and div by 2 loop', () => {
