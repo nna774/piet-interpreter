@@ -58,3 +58,5 @@ cc
 * `stack`: stack status
 * `input`: input
 * `output`: output
+
+* `cmd`: last executed command

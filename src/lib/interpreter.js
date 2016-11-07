@@ -72,16 +72,19 @@ function execCommand(env, currentColor, nextColor) {
     case 0:
       if (diffL === 0) { /* none */ }
       if (diffL === 1) { /* push */
+        env.cmd = 'push';
         env.stack.push(env.area);
         return;
       }
       if (diffL === 2) { /* pop */
+        env.cmd = 'pop';
         env.stack.pop();
         return;
       }
       break;
     case 1:
       if (diffL === 0) { /* add */
+        env.cmd = 'add';
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
         const tmp2 = env.stack.pop();
@@ -89,6 +92,7 @@ function execCommand(env, currentColor, nextColor) {
         return;
       }
       if (diffL === 1) { /* substract */
+        env.cmd = 'sub';
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
         const tmp2 = env.stack.pop();
@@ -96,6 +100,7 @@ function execCommand(env, currentColor, nextColor) {
         return;
       }
       if (diffL === 2) { /* multiply */
+        env.cmd = 'mul';
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
         const tmp2 = env.stack.pop();
@@ -105,6 +110,7 @@ function execCommand(env, currentColor, nextColor) {
       break;
     case 2:
       if (diffL === 0) { /* divide */
+        env.cmd = 'div';
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
         const tmp2 = env.stack.pop();
@@ -117,6 +123,7 @@ function execCommand(env, currentColor, nextColor) {
         return;
       }
       if (diffL === 1) { /* mod */
+        env.cmd = 'mod';
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
         const tmp2 = env.stack.pop();
@@ -124,6 +131,7 @@ function execCommand(env, currentColor, nextColor) {
         return;
       }
       if (diffL === 2) { /* not */
+        env.cmd = 'not';
         if (env.stack.length < 1) return; // スタックが足りず失敗。
         const tmp = env.stack.pop();
         if (tmp === 0) {
@@ -136,6 +144,7 @@ function execCommand(env, currentColor, nextColor) {
       break;
     case 3:
       if (diffL === 0) { /* greater */
+        env.cmd = 'greater';
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
         const tmp2 = env.stack.pop();
@@ -147,12 +156,14 @@ function execCommand(env, currentColor, nextColor) {
         return;
       }
       if (diffL === 1) { /* pointer */
+        env.cmd = 'pointer';
         if (env.stack.length < 1) return; // スタックが足りず失敗。
         const tmp = env.stack.pop();
         env.dp += tmp;
         return;
       }
       if (diffL === 2) { /* switch */
+        env.cmd = 'switch';
         if (env.stack.length < 1) return; // スタックが足りず失敗。
         const tmp = env.stack.pop();
         env.cc += tmp;
@@ -161,12 +172,14 @@ function execCommand(env, currentColor, nextColor) {
       break;
     case 4:
       if (diffL === 0) { /* duplicate */
+        env.cmd = 'dup';
         if (env.stack.length < 1) return; // スタックが足りず失敗。
         const tmp = env.stack.pop();
         env.stack.push(tmp);
         env.stack.push(tmp);
       }
       if (diffL === 1) { /* roll */
+        env.cmd = 'roll';
         // めんどくさい
         if (env.stack.length < 2) return; // スタックが足りず失敗。
         const tmp1 = env.stack.pop();
@@ -190,6 +203,7 @@ function execCommand(env, currentColor, nextColor) {
         return;
       }
       if (diffL === 2) { /* in(num) */
+        env.cmd = 'in(n)';
         const tmp = env.input.shift();
         const num = parseInt(tmp, 10);
         if (!Number.isNaN(num)) {
@@ -202,18 +216,21 @@ function execCommand(env, currentColor, nextColor) {
       break;
     case 5:
       if (diffL === 0) { /* in(char) */
+        env.cmd = 'in(c)';
         const tmp = env.input.shift();
         const num = tmp.charCodeAt(0);
         env.stack.push(num);
         return;
       }
       if (diffL === 1) { /* out(num) */
+        env.cmd = 'out(n)';
         if (env.stack.length < 1) return; // スタックが足りず失敗。
         const tmp = env.stack.pop();
         env.output += tmp.toString();
         return;
       }
       if (diffL === 2) { /* out(char) */
+        env.cmd = 'out(c)';
         if (env.stack.length < 1) return; // スタックが足りず失敗。
         const tmp = env.stack.pop();
         env.output += String.fromCharCode(tmp);
@@ -452,24 +469,47 @@ function next(world) {
   const code = world.code;
   let nextCodel = findNextCodel(env, code);
 
-  let contFlg = false;
-  for (let i = 0; i < 8; ++i) {
-    if (unmovable(code, nextCodel)) {
-      if (i % 2 === 0) {
-        env.cc++;
+  if (!world.step) {
+    let contFlg = false;
+    for (let i = 0; i < 8; ++i) {
+      if (unmovable(code, nextCodel)) {
+        if (i % 2 === 0) {
+          env.cc++;
+        } else {
+          env.dp++;
+        }
+        nextCodel = findNextCodel(env, code);
       } else {
-        env.dp++;
+        contFlg = true;
+        break;
       }
-      nextCodel = findNextCodel(env, code);
-    } else {
-      contFlg = true;
-      break;
     }
-  }
-  if (!contFlg && unmovable(code, nextCodel)) {
-    // おしまい
-    world.halt = true;
-    return world;
+    if (!contFlg && unmovable(code, nextCodel)) {
+      // おしまい
+      world.halt = true;
+      return world;
+    }
+  } else {
+    if (unmovable(code, nextCodel)) {
+      if (env.unmovableCnt % 2 === 0) {
+        ++env.cc;
+      } else {
+        ++env.dp;
+      }
+      ++env.unmovableCnt;
+      if (env.unmovableCnt === 8) {
+        world.halt = true;
+        return world;
+      }
+
+      nextCodel = findNextCodel(env, code);
+      env.nextCodel = {
+        x: nextCodel[0],
+        y: nextCodel[1],
+      };
+      return world;
+    }
+    env.unmovableCnt = 0;
   }
 
   const currentColor = code[env.x][env.y];
@@ -482,6 +522,12 @@ function next(world) {
   env.x = nextCodel[0];
   env.y = nextCodel[1];
 
+  nextCodel = findNextCodel(env, code);
+  env.nextCodel = {
+    x: nextCodel[0],
+    y: nextCodel[1],
+  };
+
   world.halt = false;
   return world;
 }
@@ -493,9 +539,10 @@ function runImp(world) {
   return world.env.output;
 }
 
-function create(code, input) {
+function create(code, input, step) {
   const env = {};
   env.x = env.y = env.dp = env.cc = env.area = 0;
+  env.unmovableCnt = 0;
   env.stack = [];
   env.input = input || [];
   env.output = '';
@@ -503,6 +550,7 @@ function create(code, input) {
     env,
     code,
     halt: false,
+    step,
   };
 }
 
