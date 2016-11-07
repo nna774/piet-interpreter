@@ -1,6 +1,6 @@
 {
   "name": "piet-interpreter",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "piet interpreter",
   "main": "dist/index.js",
   "scripts": {
