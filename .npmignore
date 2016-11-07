@@ -1,4 +1,11 @@
-dist/
+src/
+test/
+template/
+.babelrc
+.eslintrc.js
+.git-pr-release
+.tachikoma.yml
+.travis.yml
 
 # Logs
 logs
